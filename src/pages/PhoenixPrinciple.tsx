@@ -8,7 +8,7 @@ import PageTransition from '../components/PageTransition';
 import SectionHeading from '../components/SectionHeading';
 import CymaticWaves from '../components/CymaticWaves';
 import GalleryShowcase from '../components/GalleryShowcase';
-import SolarpunkPhoenixPrincipleAnimation from '../components/SolarpunkPhoenixPrincipleAnimation';
+import PhoenixPrincipleAnimatedSigil from '../components/PhoenixPrincipleAnimatedSigil';
 
 const phoenixAspects = [
   {
@@ -110,7 +110,7 @@ export default function PhoenixPrinciple() {
       <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-cosmic-black via-emerald-deep/10 to-cosmic-black" />
         <div className="absolute inset-0">
-          <SolarpunkPhoenixPrincipleAnimation />
+          <PhoenixPrincipleAnimatedSigil />
         </div>
         <PhoenixSigilBackground />
         <div className="absolute inset-0 bg-gradient-to-t from-cosmic-black via-transparent to-transparent" />
