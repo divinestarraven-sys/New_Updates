@@ -30,7 +30,7 @@ type FlameParticle = {
   flicker: number;
 };
 
-export default function PhoenixPrincipleAnimatedSigil({ className = '' }: Props) {
+function PhoenixPrincipleAnimatedSigil({ className = '' }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameRef = useRef<number>(0);
 
