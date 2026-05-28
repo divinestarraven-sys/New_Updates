@@ -4,18 +4,6 @@ type Props = {
   className?: string;
 };
 
-type Particle = {
-  x: number;
-  y: number;
-  radius: number;
-  speed: number;
-  angle: number;
-  orbit: number;
-  hue: number;
-  alpha: number;
-  drift: number;
-};
-
 type Ember = {
   x: number;
   y: number;
@@ -34,339 +22,466 @@ export default function SolarpunkPhoenixPrincipleAnimation({ className = '' }: P
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    const ctx = context;
     const dpr = window.devicePixelRatio || 1;
-
     let width = 0;
     let height = 0;
     let time = 0;
     let mouse = { x: 0, y: 0, active: false };
+    const embers: Ember[] = [];
 
     const resize = () => {
       const rect = canvas.parentElement?.getBoundingClientRect();
       width = rect?.width || window.innerWidth;
       height = rect?.height || 620;
-
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
-
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       mouse.x = width / 2;
       mouse.y = height / 2;
     };
 
     resize();
-
-    const particles: Particle[] = Array.from({ length: 120 }, (_, index) => ({
-      x: width / 2,
-      y: height / 2,
-      radius: Math.random() * 1.8 + 0.4,
-      speed: Math.random() * 0.008 + 0.002,
-      angle: (index / 120) * Math.PI * 2 + Math.random() * 0.4,
-      orbit: Math.random() * 220 + 40,
-      hue: Math.random() > 0.55 ? 45 : Math.random() > 0.25 ? 145 : 28,
-      alpha: Math.random() * 0.45 + 0.15,
-      drift: Math.random() * 0.6 + 0.2,
-    }));
-
-    const embers: Ember[] = [];
-
-    const spawnEmber = () => {
-      if (embers.length > 90) return;
-
-      const centerX = width / 2;
-      const centerY = height * 0.54;
-      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2;
-      const speed = Math.random() * 1.2 + 0.4;
-
-      embers.push({
-        x: centerX + (Math.random() - 0.5) * 90,
-        y: centerY + Math.random() * 70,
-        vx: Math.cos(angle) * speed * 0.35,
-        vy: Math.sin(angle) * speed,
-        life: 0,
-        maxLife: Math.random() * 90 + 70,
-        radius: Math.random() * 2.2 + 0.8,
-        hue: Math.random() > 0.45 ? 42 : 26,
-      });
-    };
-
-    const handleMouseMove = (event: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse = {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
-        active: true,
-      };
-    };
-
-    const handleMouseLeave = () => {
-      mouse.active = false;
-    };
-
     window.addEventListener('resize', resize);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top, active: true };
+    };
+    const handleMouseLeave = () => { mouse.active = false; };
     canvas.parentElement?.addEventListener('mousemove', handleMouseMove);
     canvas.parentElement?.addEventListener('mouseleave', handleMouseLeave);
 
-    const drawSacredCircle = (
-      x: number,
-      y: number,
-      radius: number,
-      alpha: number,
-      hue = 45,
-      lineWidth = 1
-    ) => {
+    const spawnEmber = (cx: number, cy: number) => {
+      if (embers.length > 140) return;
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;
+      const speed = Math.random() * 1.8 + 0.5;
+      const fromTail = Math.random() < 0.35;
+      embers.push({
+        x: cx + (Math.random() - 0.5) * 60,
+        y: fromTail ? cy + 80 + Math.random() * 100 : cy + (Math.random() - 0.5) * 60,
+        vx: Math.cos(angle) * speed * 0.5,
+        vy: fromTail ? Math.random() * 0.8 + 0.2 : Math.sin(angle) * speed,
+        life: 0,
+        maxLife: Math.random() * 110 + 80,
+        radius: Math.random() * 2.5 + 0.6,
+        hue: Math.random() > 0.5 ? 25 + Math.random() * 20 : 40 + Math.random() * 15,
+      });
+    };
+
+    // Draw outer sacred geometry ring
+    const drawSacredRing = (cx: number, cy: number, r: number, alpha: number) => {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      // Main circle
       ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = `hsla(${hue}, 72%, 62%, ${alpha})`;
-      ctx.lineWidth = lineWidth;
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = `hsla(38, 80%, 55%, ${alpha})`;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Inner decorative ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, r * 0.88, 0, Math.PI * 2);
+      ctx.strokeStyle = `hsla(38, 70%, 50%, ${alpha * 0.6})`;
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+
+      // Sacred spoke lines
+      const spokes = 12;
+      for (let i = 0; i < spokes; i++) {
+        const a = (i / spokes) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * r * 0.88, cy + Math.sin(a) * r * 0.88);
+        ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+        ctx.strokeStyle = `hsla(38, 80%, 60%, ${alpha * 0.8})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+
+        // Small node dots at spoke tips
+        ctx.beginPath();
+        ctx.arc(cx + Math.cos(a) * r * 0.94, cy + Math.sin(a) * r * 0.94, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(38, 90%, 65%, ${alpha})`;
+        ctx.fill();
+      }
+
+      ctx.restore();
+    };
+
+    // Draw one wing (side: -1 = left, 1 = right)
+    const drawWing = (cx: number, cy: number, side: -1 | 1, pulse: number, proximity: number) => {
+      const t = time * 0.018;
+      const flap = Math.sin(t) * 8 * side;
+      const boost = proximity * 0.4;
+
+      // Primary large feather sweeps - 5 main feather groups
+      const featherLayers = [
+        { count: 7, spreadBase: 320, liftBase: 110, colorH: 22, colorS: 95, colorL: 52 },
+        { count: 6, spreadBase: 270, liftBase: 90, colorH: 32, colorS: 92, colorL: 58 },
+        { count: 5, spreadBase: 210, liftBase: 70, colorH: 42, colorS: 88, colorL: 62 },
+      ];
+
+      for (const layer of featherLayers) {
+        for (let i = 0; i < layer.count; i++) {
+          const ratio = i / (layer.count - 1);
+          const spread = layer.spreadBase * (0.3 + ratio * 0.7);
+          const lift = layer.liftBase * Math.sin(ratio * Math.PI * 0.9);
+          const waviness = Math.sin(t * 1.1 + i * 0.6) * 12;
+
+          const sx = cx + side * 18;
+          const sy = cy - 20 + ratio * 30;
+          const cpx = cx + side * spread * 0.5;
+          const cpy = cy - lift - waviness + flap;
+          const ex = cx + side * spread;
+          const ey = cy - lift * 0.3 + ratio * 120 + flap * 0.5;
+
+          // Feather glow
+          const grad = ctx.createLinearGradient(sx, sy, ex, ey);
+          grad.addColorStop(0, `hsla(${layer.colorH}, ${layer.colorS}%, ${layer.colorL}%, ${0.65 + pulse * 0.2 + boost * 0.15})`);
+          grad.addColorStop(0.5, `hsla(${layer.colorH + 10}, ${layer.colorS}%, ${layer.colorL + 8}%, ${0.4 + pulse * 0.15})`);
+          grad.addColorStop(1, `hsla(${layer.colorH - 5}, ${layer.colorS - 10}%, ${layer.colorL - 8}%, ${0.08 + pulse * 0.08})`);
+
+          ctx.beginPath();
+          ctx.moveTo(sx, sy);
+          ctx.quadraticCurveTo(cpx, cpy, ex, ey);
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 2.8 - ratio * 1.4;
+          ctx.shadowBlur = 20 + pulse * 12;
+          ctx.shadowColor = `hsla(${layer.colorH}, 95%, 58%, ${0.5 + pulse * 0.3})`;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // Secondary feather tip accent
+          if (ratio > 0.5) {
+            const tipGrad = ctx.createLinearGradient(cpx, cpy, ex, ey);
+            tipGrad.addColorStop(0, `hsla(45, 90%, 70%, ${0.3 + pulse * 0.2})`);
+            tipGrad.addColorStop(1, `hsla(22, 90%, 50%, ${0.05})`);
+            ctx.beginPath();
+            ctx.moveTo(cpx, cpy);
+            ctx.quadraticCurveTo(
+              cpx + side * 20,
+              cpy - 20 + flap * 0.3,
+              ex + side * 15,
+              ey - 25
+            );
+            ctx.strokeStyle = tipGrad;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Upper crest feathers (pointing upward sharply)
+      for (let i = 0; i < 4; i++) {
+        const ratio = i / 3;
+        const crestSpread = side * (50 + ratio * 100);
+        const crestLift = 160 + ratio * 60 + Math.sin(t + i) * 10;
+
+        const grad = ctx.createLinearGradient(cx, cy - 60, cx + crestSpread, cy - crestLift);
+        grad.addColorStop(0, `hsla(38, 92%, 62%, ${0.6 + pulse * 0.2})`);
+        grad.addColorStop(1, `hsla(22, 88%, 52%, ${0.15 + pulse * 0.1})`);
+
+        ctx.beginPath();
+        ctx.moveTo(cx + side * 10, cy - 60);
+        ctx.quadraticCurveTo(
+          cx + crestSpread * 0.6,
+          cy - crestLift * 0.7,
+          cx + crestSpread,
+          cy - crestLift
+        );
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.8 - ratio * 0.8;
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = `hsla(38, 95%, 60%, ${0.4 + pulse * 0.3})`;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+    };
+
+    // Tail feathers flowing downward
+    const drawTail = (cx: number, cy: number, pulse: number) => {
+      const t = time * 0.014;
+      const feathers = 9;
+
+      for (let i = 0; i < feathers; i++) {
+        const side = i % 2 === 0 ? 1 : -1;
+        const ratio = i / (feathers - 1);
+        const spread = (ratio - 0.5) * 260;
+        const drop = 140 + Math.sin(ratio * Math.PI) * 80;
+        const wave = Math.sin(t + i * 0.7) * 14;
+
+        const hue = 22 + ratio * 18;
+        const grad = ctx.createLinearGradient(cx, cy + 60, cx + spread, cy + drop);
+        grad.addColorStop(0, `hsla(${hue}, 92%, 58%, ${0.5 + pulse * 0.2})`);
+        grad.addColorStop(0.6, `hsla(${hue - 5}, 88%, 48%, ${0.3 + pulse * 0.15})`);
+        grad.addColorStop(1, `hsla(${hue - 10}, 80%, 38%, ${0.05})`);
+
+        ctx.beginPath();
+        ctx.moveTo(cx + side * 8, cy + 60);
+        ctx.quadraticCurveTo(
+          cx + spread * 0.4 + wave,
+          cy + drop * 0.5,
+          cx + spread + wave * 0.5,
+          cy + drop
+        );
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2.2 - ratio * 0.8;
+        ctx.shadowBlur = 14 + pulse * 8;
+        ctx.shadowColor = `hsla(${hue}, 95%, 55%, ${0.4 + pulse * 0.2})`;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+    };
+
+    // Bird body - flame-shaped torso
+    const drawBody = (cx: number, cy: number, pulse: number) => {
+      // Outer body glow
+      const outerGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 180);
+      outerGlow.addColorStop(0, `hsla(40, 95%, 70%, ${0.12 + pulse * 0.06})`);
+      outerGlow.addColorStop(0.4, `hsla(28, 90%, 55%, ${0.08 + pulse * 0.04})`);
+      outerGlow.addColorStop(1, 'transparent');
+      ctx.beginPath();
+      ctx.arc(cx, cy, 180, 0, Math.PI * 2);
+      ctx.fillStyle = outerGlow;
+      ctx.fill();
+
+      // Main torso shape - upward flame/bird body
+      const bodyGrad = ctx.createLinearGradient(cx, cy - 130, cx, cy + 80);
+      bodyGrad.addColorStop(0, `hsla(42, 95%, 72%, ${0.9 + pulse * 0.08})`);
+      bodyGrad.addColorStop(0.3, `hsla(32, 94%, 60%, ${0.75 + pulse * 0.12})`);
+      bodyGrad.addColorStop(0.7, `hsla(22, 92%, 50%, ${0.6 + pulse * 0.1})`);
+      bodyGrad.addColorStop(1, `hsla(18, 88%, 42%, ${0.35 + pulse * 0.08})`);
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 130);
+      // Head crown spike
+      ctx.bezierCurveTo(cx - 8, cy - 90, cx - 30, cy - 60, cx - 34, cy - 20);
+      // Left body side
+      ctx.bezierCurveTo(cx - 28, cy + 20, cx - 18, cy + 55, cx, cy + 80);
+      // Right body side mirror
+      ctx.bezierCurveTo(cx + 18, cy + 55, cx + 28, cy + 20, cx + 34, cy - 20);
+      ctx.bezierCurveTo(cx + 30, cy - 60, cx + 8, cy - 90, cx, cy - 130);
+
+      ctx.fillStyle = bodyGrad;
+      ctx.shadowBlur = 40;
+      ctx.shadowColor = `hsla(30, 95%, 58%, ${0.5 + pulse * 0.25})`;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Body outline shimmer
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 130);
+      ctx.bezierCurveTo(cx - 8, cy - 90, cx - 30, cy - 60, cx - 34, cy - 20);
+      ctx.bezierCurveTo(cx - 28, cy + 20, cx - 18, cy + 55, cx, cy + 80);
+      ctx.bezierCurveTo(cx + 18, cy + 55, cx + 28, cy + 20, cx + 34, cy - 20);
+      ctx.bezierCurveTo(cx + 30, cy - 60, cx + 8, cy - 90, cx, cy - 130);
+      ctx.strokeStyle = `hsla(45, 95%, 75%, ${0.35 + pulse * 0.2})`;
+      ctx.lineWidth = 1.2;
       ctx.stroke();
     };
 
-    const drawWing = (
-      centerX: number,
-      centerY: number,
-      side: -1 | 1,
-      pulse: number
-    ) => {
-      const featherCount = 11;
+    // Head and beak
+    const drawHead = (cx: number, cy: number, pulse: number) => {
+      const headY = cy - 120;
 
-      for (let i = 0; i < featherCount; i += 1) {
-        const ratio = i / (featherCount - 1);
-        const spread = 70 + ratio * 220;
-        const lift = Math.sin(ratio * Math.PI) * 90 + ratio * 70;
-        const curve = 30 + Math.sin(time * 0.018 + i * 0.45) * 9;
+      // Head glow
+      const headGlow = ctx.createRadialGradient(cx, headY, 0, cx, headY, 40);
+      headGlow.addColorStop(0, `hsla(45, 100%, 80%, ${0.8 + pulse * 0.15})`);
+      headGlow.addColorStop(0.4, `hsla(38, 95%, 65%, ${0.5 + pulse * 0.1})`);
+      headGlow.addColorStop(1, 'transparent');
+      ctx.beginPath();
+      ctx.arc(cx, headY, 40, 0, Math.PI * 2);
+      ctx.fillStyle = headGlow;
+      ctx.fill();
 
-        const startX = centerX + side * 24;
-        const startY = centerY - 16 + ratio * 7;
-        const cpX = centerX + side * (spread * 0.48);
-        const cpY = centerY - lift - curve;
-        const endX = centerX + side * spread;
-        const endY = centerY - lift * 0.42 + ratio * 88;
+      // Head sphere
+      const headGrad = ctx.createRadialGradient(cx - 4, headY - 4, 2, cx, headY, 22);
+      headGrad.addColorStop(0, `hsla(48, 100%, 82%, ${0.95})`);
+      headGrad.addColorStop(0.5, `hsla(40, 95%, 68%, ${0.85})`);
+      headGrad.addColorStop(1, `hsla(28, 90%, 52%, ${0.7})`);
+      ctx.beginPath();
+      ctx.arc(cx, headY, 22, 0, Math.PI * 2);
+      ctx.fillStyle = headGrad;
+      ctx.shadowBlur = 30;
+      ctx.shadowColor = `hsla(42, 98%, 65%, ${0.6 + pulse * 0.3})`;
+      ctx.fill();
+      ctx.shadowBlur = 0;
 
-        const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
-        gradient.addColorStop(0, `hsla(46, 86%, 72%, ${0.48 + pulse * 0.16})`);
-        gradient.addColorStop(0.48, `hsla(142, 74%, 58%, ${0.20 + pulse * 0.12})`);
-        gradient.addColorStop(1, `hsla(38, 96%, 54%, ${0.08 + pulse * 0.1})`);
+      // Beak - sharp downward point
+      const beakGrad = ctx.createLinearGradient(cx - 8, headY + 10, cx + 8, headY + 35);
+      beakGrad.addColorStop(0, `hsla(38, 90%, 65%, 0.9)`);
+      beakGrad.addColorStop(1, `hsla(25, 85%, 48%, 0.7)`);
+      ctx.beginPath();
+      ctx.moveTo(cx - 8, headY + 10);
+      ctx.lineTo(cx + 8, headY + 10);
+      ctx.lineTo(cx, headY + 35);
+      ctx.closePath();
+      ctx.fillStyle = beakGrad;
+      ctx.fill();
+
+      // Eye
+      ctx.beginPath();
+      ctx.arc(cx + 5, headY - 4, 4, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(0, 0%, 5%, 0.9)`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx + 6, headY - 5, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(45, 100%, 90%, 0.9)`;
+      ctx.fill();
+
+      // Crown feathers - crest spikes
+      for (let i = 0; i < 5; i++) {
+        const ratio = (i - 2) / 2;
+        const spikeX = cx + ratio * 16;
+        const spikeH = 28 + (1 - Math.abs(ratio)) * 22 + Math.sin(time * 0.022 + i) * 5;
+        const spikeHue = 38 + i * 5;
 
         ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.quadraticCurveTo(cpX, cpY, endX, endY);
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = 1.6 + (1 - ratio) * 1.2;
-        ctx.shadowBlur = 16;
-        ctx.shadowColor = `hsla(46, 90%, 62%, ${0.25 + pulse * 0.25})`;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        const veinX = centerX + side * (spread * 0.7);
-        const veinY = centerY - lift * 0.48 + ratio * 52;
-
-        ctx.beginPath();
-        ctx.arc(veinX, veinY, 1.4 + pulse * 1.2, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${i % 2 === 0 ? 45 : 145}, 85%, 68%, ${0.34 + pulse * 0.22})`;
+        ctx.moveTo(spikeX - 4, headY - 18);
+        ctx.lineTo(spikeX, headY - 18 - spikeH);
+        ctx.lineTo(spikeX + 4, headY - 18);
+        ctx.fillStyle = `hsla(${spikeHue}, 95%, 68%, ${0.7 + pulse * 0.2})`;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = `hsla(${spikeHue}, 95%, 65%, ${0.5})`;
         ctx.fill();
+        ctx.shadowBlur = 0;
       }
     };
 
-    const drawVines = (centerX: number, centerY: number, pulse: number) => {
-      for (const side of [-1, 1] as const) {
-        ctx.beginPath();
-        ctx.moveTo(centerX + side * 18, centerY + 120);
+    // Heart core / sacred center
+    const drawCore = (cx: number, cy: number, pulse: number, proximity: number) => {
+      const coreY = cy - 30;
+      const coreR = 16 + pulse * 5 + proximity * 6;
 
-        for (let i = 0; i <= 9; i += 1) {
-          const y = centerY + 120 - i * 28;
-          const x =
-            centerX +
-            side * (24 + i * 13 + Math.sin(time * 0.02 + i) * 8);
+      // Sacred geometry inner triangle
+      ctx.save();
+      ctx.translate(cx, coreY);
+      ctx.rotate(time * 0.005);
 
-          if (i === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
+      // Upward triangle
+      ctx.beginPath();
+      ctx.moveTo(0, -coreR * 1.4);
+      ctx.lineTo(coreR * 1.2, coreR * 0.8);
+      ctx.lineTo(-coreR * 1.2, coreR * 0.8);
+      ctx.closePath();
+      ctx.strokeStyle = `hsla(45, 100%, 80%, ${0.4 + pulse * 0.2})`;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
 
-          if (i % 2 === 0) {
-            ctx.beginPath();
-            ctx.ellipse(
-              x + side * 9,
-              y - 5,
-              6 + pulse * 1.5,
-              2.8,
-              side * 0.65,
-              0,
-              Math.PI * 2
-            );
-            ctx.fillStyle = `hsla(145, 74%, 52%, ${0.16 + pulse * 0.12})`;
-            ctx.fill();
-          }
-        }
+      // Downward triangle
+      ctx.beginPath();
+      ctx.moveTo(0, coreR * 1.4);
+      ctx.lineTo(coreR * 1.2, -coreR * 0.8);
+      ctx.lineTo(-coreR * 1.2, -coreR * 0.8);
+      ctx.closePath();
+      ctx.strokeStyle = `hsla(28, 95%, 68%, ${0.35 + pulse * 0.15})`;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
 
-        ctx.beginPath();
-        ctx.moveTo(centerX + side * 20, centerY + 122);
+      ctx.restore();
 
-        for (let i = 0; i <= 10; i += 1) {
-          const y = centerY + 122 - i * 28;
-          const x =
-            centerX +
-            side * (20 + i * 15 + Math.sin(time * 0.018 + i * 0.9) * 10);
+      // Core orb
+      const coreGrad = ctx.createRadialGradient(cx - 2, coreY - 2, 0, cx, coreY, coreR * 3);
+      coreGrad.addColorStop(0, `hsla(50, 100%, 92%, 0.95)`);
+      coreGrad.addColorStop(0.2, `hsla(44, 98%, 78%, ${0.75 + pulse * 0.2})`);
+      coreGrad.addColorStop(0.5, `hsla(32, 94%, 58%, ${0.35 + pulse * 0.15})`);
+      coreGrad.addColorStop(1, 'transparent');
 
-          ctx.lineTo(x, y);
-        }
+      ctx.beginPath();
+      ctx.arc(cx, coreY, coreR * 3, 0, Math.PI * 2);
+      ctx.fillStyle = coreGrad;
+      ctx.fill();
 
-        ctx.strokeStyle = `hsla(145, 70%, 48%, ${0.22 + pulse * 0.14})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
+      ctx.beginPath();
+      ctx.arc(cx, coreY, coreR, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(48, 100%, 88%, ${0.88 + pulse * 0.1})`;
+      ctx.shadowBlur = 25 + pulse * 15;
+      ctx.shadowColor = `hsla(42, 100%, 68%, 0.8)`;
+      ctx.fill();
+      ctx.shadowBlur = 0;
     };
 
     const animate = () => {
       time += 1;
-
       ctx.clearRect(0, 0, width, height);
 
-      const centerX = width / 2;
-      const centerY = height * 0.54;
-      const pulse = (Math.sin(time * 0.025) + 1) / 2;
-      const slowPulse = (Math.sin(time * 0.009) + 1) / 2;
-
-      const bg = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        0,
-        centerX,
-        centerY,
-        Math.max(width, height) * 0.72
-      );
-      bg.addColorStop(0, 'rgba(214, 178, 94, 0.11)');
-      bg.addColorStop(0.22, 'rgba(63, 175, 90, 0.08)');
-      bg.addColorStop(0.55, 'rgba(15, 46, 43, 0.14)');
-      bg.addColorStop(1, 'rgba(5, 10, 8, 0.02)');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, width, height);
+      const cx = width / 2;
+      const cy = height * 0.52;
+      const pulse = (Math.sin(time * 0.024) + 1) / 2;
+      const slowPulse = (Math.sin(time * 0.008) + 1) / 2;
 
       const proximity = mouse.active
-        ? Math.max(
-            0,
-            1 -
-              Math.hypot(mouse.x - centerX, mouse.y - centerY) /
-                Math.max(width * 0.45, 240)
-          )
+        ? Math.max(0, 1 - Math.hypot(mouse.x - cx, mouse.y - cy) / Math.max(width * 0.45, 240))
         : 0;
 
-      drawSacredCircle(centerX, centerY, 66 + slowPulse * 6, 0.18 + proximity * 0.1, 45, 1.1);
-      drawSacredCircle(centerX, centerY, 122 + slowPulse * 10, 0.12 + proximity * 0.08, 145, 0.9);
-      drawSacredCircle(centerX, centerY, 190 + slowPulse * 16, 0.08 + proximity * 0.06, 45, 0.8);
+      // Subtle warm background wash
+      const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(width, height) * 0.65);
+      bgGrad.addColorStop(0, `rgba(180, 100, 20, ${0.10 + pulse * 0.04})`);
+      bgGrad.addColorStop(0.35, `rgba(120, 50, 10, ${0.06})`);
+      bgGrad.addColorStop(1, 'rgba(3, 5, 2, 0.02)');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
 
-      for (let i = 0; i < 12; i += 1) {
-        const angle = (i / 12) * Math.PI * 2 + time * 0.002;
-        const inner = 88;
-        const outer = 178 + Math.sin(time * 0.012 + i) * 6;
+      // Outer sacred ring
+      const ringR = Math.min(width, height) * 0.42;
+      drawSacredRing(cx, cy - 10, ringR, 0.18 + slowPulse * 0.06);
 
+      // Inner ring
+      drawSacredRing(cx, cy - 10, ringR * 0.72, 0.12 + slowPulse * 0.04);
+
+      // Rotating light rays from center (like the image's radial burst)
+      for (let i = 0; i < 16; i++) {
+        const angle = (i / 16) * Math.PI * 2 + time * 0.003;
+        const inner = 70;
+        const outer = ringR * 0.68 + Math.sin(time * 0.01 + i * 0.5) * 12;
         ctx.beginPath();
-        ctx.moveTo(centerX + Math.cos(angle) * inner, centerY + Math.sin(angle) * inner);
-        ctx.lineTo(centerX + Math.cos(angle) * outer, centerY + Math.sin(angle) * outer);
-        ctx.strokeStyle = `hsla(${i % 2 === 0 ? 45 : 145}, 78%, 62%, ${0.07 + pulse * 0.05})`;
-        ctx.lineWidth = 0.8;
+        ctx.moveTo(cx + Math.cos(angle) * inner, cy - 10 + Math.sin(angle) * inner);
+        ctx.lineTo(cx + Math.cos(angle) * outer, cy - 10 + Math.sin(angle) * outer);
+        ctx.strokeStyle = `hsla(${i % 2 === 0 ? 38 : 28}, 85%, 58%, ${0.05 + pulse * 0.04})`;
+        ctx.lineWidth = 0.7;
         ctx.stroke();
       }
 
-      drawWing(centerX, centerY, -1, pulse + proximity * 0.5);
-      drawWing(centerX, centerY, 1, pulse + proximity * 0.5);
+      drawTail(cx, cy, pulse);
+      drawWing(cx, cy, -1, pulse, proximity);
+      drawWing(cx, cy, 1, pulse, proximity);
+      drawBody(cx, cy, pulse);
+      drawHead(cx, cy, pulse);
+      drawCore(cx, cy, pulse, proximity);
 
-      const bodyGradient = ctx.createLinearGradient(centerX, centerY - 90, centerX, centerY + 130);
-      bodyGradient.addColorStop(0, `hsla(45, 92%, 72%, ${0.72 + pulse * 0.2})`);
-      bodyGradient.addColorStop(0.45, `hsla(28, 94%, 55%, ${0.58 + pulse * 0.18})`);
-      bodyGradient.addColorStop(1, `hsla(145, 70%, 48%, ${0.28 + pulse * 0.1})`);
+      // Spawn and draw embers
+      if (Math.random() < 0.85) spawnEmber(cx, cy);
 
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY - 118);
-      ctx.bezierCurveTo(centerX - 38, centerY - 32, centerX - 24, centerY + 72, centerX, centerY + 132);
-      ctx.bezierCurveTo(centerX + 24, centerY + 72, centerX + 38, centerY - 32, centerX, centerY - 118);
-      ctx.fillStyle = bodyGradient;
-      ctx.shadowBlur = 28;
-      ctx.shadowColor = `hsla(42, 95%, 58%, ${0.26 + pulse * 0.18})`;
-      ctx.fill();
-      ctx.shadowBlur = 0;
+      for (let i = embers.length - 1; i >= 0; i--) {
+        const e = embers[i];
+        e.life += 1;
+        e.x += e.vx + Math.sin(time * 0.015 + e.life * 0.06) * 0.3;
+        e.y += e.vy;
+        e.vy -= 0.006;
 
-      const coreRadius = 23 + pulse * 5 + proximity * 7;
-      const coreGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, coreRadius * 4);
-      coreGradient.addColorStop(0, `hsla(48, 100%, 82%, ${0.92})`);
-      coreGradient.addColorStop(0.22, `hsla(42, 94%, 58%, ${0.52 + pulse * 0.22})`);
-      coreGradient.addColorStop(0.52, `hsla(145, 74%, 48%, ${0.18 + pulse * 0.14})`);
-      coreGradient.addColorStop(1, 'transparent');
+        if (e.life >= e.maxLife) { embers.splice(i, 1); continue; }
 
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, coreRadius * 4, 0, Math.PI * 2);
-      ctx.fillStyle = coreGradient;
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, coreRadius, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(45, 100%, 78%, ${0.78 + pulse * 0.2})`;
-      ctx.fill();
-
-      drawVines(centerX, centerY, pulse);
-
-      for (const p of particles) {
-        p.angle += p.speed;
-
-        const orbitPulse = Math.sin(time * 0.01 + p.drift * 10) * 16;
-        const x =
-          centerX +
-          Math.cos(p.angle) * (p.orbit + orbitPulse) * (width < 720 ? 0.64 : 1);
-        const y =
-          centerY +
-          Math.sin(p.angle * 0.82) * (p.orbit * 0.42 + orbitPulse * 0.4);
+        const age = e.life / e.maxLife;
+        const alpha = age < 0.15 ? age / 0.15 : 1 - age;
 
         ctx.beginPath();
-        ctx.arc(x, y, p.radius * (0.8 + pulse * 0.5), 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${p.hue}, 82%, 68%, ${p.alpha * (0.7 + slowPulse * 0.4)})`;
-        ctx.fill();
-      }
-
-      if (Math.random() < 0.75) spawnEmber();
-
-      for (let i = embers.length - 1; i >= 0; i -= 1) {
-        const ember = embers[i];
-        ember.life += 1;
-        ember.x += ember.vx + Math.sin(time * 0.018 + ember.life * 0.08) * 0.24;
-        ember.y += ember.vy;
-        ember.vy -= 0.003;
-
-        if (ember.life >= ember.maxLife) {
-          embers.splice(i, 1);
-          continue;
-        }
-
-        const age = ember.life / ember.maxLife;
-        const alpha = age < 0.18 ? age / 0.18 : 1 - age;
-
-        ctx.beginPath();
-        ctx.arc(ember.x, ember.y, ember.radius * (1 - age * 0.3), 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${ember.hue}, 95%, 66%, ${alpha * 0.55})`;
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = `hsla(${ember.hue}, 95%, 60%, ${alpha * 0.5})`;
+        ctx.arc(e.x, e.y, e.radius * (1 - age * 0.4), 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${e.hue}, 95%, 65%, ${alpha * 0.65})`;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = `hsla(${e.hue}, 95%, 58%, ${alpha * 0.55})`;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
 
-      const vignette = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        Math.min(width, height) * 0.12,
-        centerX,
-        centerY,
-        Math.max(width, height) * 0.7
-      );
+      // Vignette
+      const vignette = ctx.createRadialGradient(cx, cy, Math.min(width, height) * 0.1, cx, cy, Math.max(width, height) * 0.72);
       vignette.addColorStop(0, 'transparent');
-      vignette.addColorStop(1, 'rgba(3, 8, 6, 0.48)');
+      vignette.addColorStop(1, 'rgba(2, 5, 3, 0.52)');
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, width, height);
 
