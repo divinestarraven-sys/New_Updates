@@ -142,13 +142,22 @@ export default function JoinResonance() {
             <p className="font-body text-moonlight-white/40 text-sm leading-relaxed mb-6">
               Early access to The Codex, practice systems, symbolic archives, founding member updates, and MUSEschool development previews.
             </p>
-            <Link
-              to="/seed-membership"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-glow/20 border border-emerald-glow/30 hover:bg-emerald-glow/30 transition-all font-display text-sm tracking-widest text-emerald-glow"
-            >
-              Explore Seed Membership
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="flex flex-col items-center gap-3">
+              <Link
+                to="/seed-membership"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-glow/20 border border-emerald-glow/30 hover:bg-emerald-glow/30 transition-all font-display text-sm tracking-widest text-emerald-glow"
+              >
+                Explore Seed Membership
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to="/seed-membership#join-form"
+                className="inline-flex items-center gap-1.5 text-gold-sacred/60 hover:text-gold-sacred transition-colors font-sacred text-xs tracking-wide"
+              >
+                Join the Seed Circle
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
           </GlassCard>
         </div>
       </section>
