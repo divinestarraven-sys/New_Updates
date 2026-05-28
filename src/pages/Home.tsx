@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight, Eye, Heart, Cpu, Globe, Zap, Waves, Leaf, Sprout,
   Star, TreePine, BookOpen, Compass, Flame, GraduationCap,
-  Map, Sparkles,
+  Map, Sparkles, Network,
 } from 'lucide-react';
 import SacredGeometry from '../components/SacredGeometry';
 import SacredGeometryHero from '../components/SacredGeometryHero';
@@ -371,6 +371,7 @@ export default function Home() {
               { label: 'Walk The Portals', path: '/portals', icon: Map },
               { label: 'Join The Living Grid', path: '/join', icon: Heart },
               { label: 'Become a Seed Member', path: '/seed-membership', icon: Sprout },
+              { label: 'Join Mycelium Membership', path: '/mycelium-membership', icon: Network },
             ].map((cta, i) => (
               <motion.div
                 key={cta.label}

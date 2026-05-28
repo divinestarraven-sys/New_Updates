@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BookOpen, Video, Podcast, FileText, ExternalLink, ArrowRight, Link as LinkIcon, Sprout } from 'lucide-react';
+import { BookOpen, Video, Podcast, FileText, ExternalLink, ArrowRight, Link as LinkIcon, Sprout, Network } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import SacredGeometry from '../components/SacredGeometry';
@@ -224,7 +224,7 @@ export default function Resources() {
             </GlassCard>
           </div>
 
-          <GlassCard solar className="p-6 sm:p-8 max-w-2xl mx-auto mb-6">
+          <GlassCard solar className="p-6 sm:p-8 max-w-2xl mx-auto mb-4">
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
               <div className="w-12 h-12 rounded-xl bg-emerald-glow/10 flex items-center justify-center shrink-0">
                 <Sprout className="w-6 h-6 text-emerald-glow" />
@@ -242,6 +242,30 @@ export default function Resources() {
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-glow/15 border border-emerald-glow/25 hover:bg-emerald-glow/25 transition-all font-display text-xs tracking-widest text-emerald-glow whitespace-nowrap shrink-0"
               >
                 Explore Seed Membership
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+          </GlassCard>
+
+          <GlassCard gold className="p-6 sm:p-8 max-w-2xl mx-auto mb-6">
+            <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+              <div className="w-12 h-12 rounded-xl bg-gold-sacred/10 flex items-center justify-center shrink-0">
+                <Network className="w-6 h-6 text-gold-sacred" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-display text-lg tracking-wider text-moonlight-white mb-1">
+                  Mycelium Membership
+                </h3>
+                <p className="font-body text-moonlight-white/40 text-sm leading-relaxed">
+                  Paid member access to weekly guided practices, New Moon Council, resource library, community events circle, and all Seed sections.
+                </p>
+              </div>
+              <Link
+                to="/mycelium-membership"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-display text-xs tracking-widest text-cosmic-black whitespace-nowrap shrink-0 transition-all hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #d4a843, #10b981)' }}
+              >
+                Join Mycelium
                 <ArrowRight className="w-3 h-3" />
               </Link>
             </div>

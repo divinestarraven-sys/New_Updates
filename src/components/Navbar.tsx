@@ -17,6 +17,7 @@ const navLinks = [
   { path: '/resources', label: 'Resources' },
   { path: '/codex', label: 'Codex' },
   { path: '/seed-membership', label: 'Seed Membership' },
+  { path: '/mycelium-membership', label: 'Mycelium' },
   { path: '/gallery', label: 'Gallery' },
   { path: '/join', label: 'Join' },
   { path: '/contact', label: 'Contact' },

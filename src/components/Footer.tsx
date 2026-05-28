@@ -29,6 +29,7 @@ const footerLinks = [
       { path: '/resources', label: 'Resources' },
       { path: '/codex', label: 'The Codex' },
       { path: '/seed-membership', label: 'Seed Membership' },
+      { path: '/mycelium-membership', label: 'Mycelium Membership' },
       { path: '/join', label: 'Join The Resonance' },
       { path: '/contact', label: 'Contact' },
     ],

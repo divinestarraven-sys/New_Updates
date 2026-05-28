@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   Sprout, BookOpen, ArrowRight, Check, Sparkles, TreePine,
   Compass, Star, Flame, Waves, GraduationCap, Leaf, Heart,
-  Map, FileText, Users, Pen,
+  Map, FileText, Users, Pen, Network,
 } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 import SacredGeometry from '../components/SacredGeometry';
@@ -438,6 +438,33 @@ export default function SeedMembership() {
               </form>
             </GlassCard>
           )}
+        </div>
+      </section>
+
+      {/* ===== Deeper Layer CTA ===== */}
+      <section className="section-padding bg-gradient-to-b from-cosmic-black via-emerald-deep/5 to-cosmic-black">
+        <div className="container-sacred max-w-2xl mx-auto">
+          <GlassCard gold className="p-7 sm:p-9 text-center">
+            <div className="w-12 h-12 rounded-xl bg-gold-sacred/10 flex items-center justify-center mx-auto mb-4">
+              <Network className="w-6 h-6 text-gold-sacred" />
+            </div>
+            <p className="font-sacred text-gold-sacred/60 text-xs tracking-widest mb-2">READY TO GO DEEPER?</p>
+            <h3 className="font-display text-2xl tracking-wider text-gradient-harvest mb-3">
+              Mycelium Membership
+            </h3>
+            <p className="font-body text-moonlight-white/45 text-sm leading-relaxed mb-6">
+              Continue deeper into the living network — weekly guided practices, New Moon Council access,
+              resource library, community events circle, and all Seed sections. $40 USD.
+            </p>
+            <Link
+              to="/mycelium-membership"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-display text-sm tracking-widest text-cosmic-black transition-all hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #d4a843, #10b981)' }}
+            >
+              Enter the Mycelium Network
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </GlassCard>
         </div>
       </section>
 

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { ArrowRight, Check, TreePine, Users, Zap, Sprout } from 'lucide-react';
+import { ArrowRight, Check, TreePine, Users, Zap, Sprout, Network } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import SacredGeometry from '../components/SacredGeometry';
@@ -158,6 +158,34 @@ export default function JoinResonance() {
                 <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
+          </GlassCard>
+        </div>
+      </section>
+
+      {/* Mycelium Membership */}
+      <section className="section-padding bg-gradient-to-b from-cosmic-black via-cosmic-deep/50 to-cosmic-black">
+        <div className="container-sacred max-w-xl mx-auto">
+          <SectionHeading
+            title="Mycelium Membership"
+            subtitle="The deeper living network layer — $40 USD."
+          />
+          <GlassCard gold className="p-6 sm:p-8 text-center">
+            <div className="w-12 h-12 rounded-xl bg-gold-sacred/10 flex items-center justify-center mx-auto mb-4">
+              <Network className="w-6 h-6 text-gold-sacred" />
+            </div>
+            <h3 className="font-display text-xl tracking-wider text-moonlight-white mb-2">Enter the Mycelium Network</h3>
+            <p className="font-body text-moonlight-white/40 text-sm leading-relaxed mb-6">
+              Join the deeper community layer for $40 USD. Includes weekly guided practices, New Moon Council access,
+              resource library, community events circle, and all Seed Membership sections.
+            </p>
+            <Link
+              to="/mycelium-membership"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-display text-sm tracking-widest text-cosmic-black transition-all hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #d4a843, #10b981)' }}
+            >
+              Join Mycelium Membership
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </GlassCard>
         </div>
       </section>

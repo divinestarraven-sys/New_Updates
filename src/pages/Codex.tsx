@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BookOpen, Search, ChevronRight, Sprout, ArrowRight } from 'lucide-react';
+import { BookOpen, Search, ChevronRight, Sprout, ArrowRight, Network } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
@@ -83,13 +83,23 @@ export default function Codex() {
               Seed Members receive guided access to the Living Codex as it grows.
             </span>
           </div>
-          <Link
-            to="/seed-membership"
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-glow/15 border border-emerald-glow/25 hover:bg-emerald-glow/25 transition-all font-display text-xs tracking-widest text-emerald-glow whitespace-nowrap"
-          >
-            Become a Seed Member
-            <ArrowRight className="w-3 h-3" />
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              to="/seed-membership"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-glow/15 border border-emerald-glow/25 hover:bg-emerald-glow/25 transition-all font-display text-xs tracking-widest text-emerald-glow whitespace-nowrap"
+            >
+              Become a Seed Member
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+            <Link
+              to="/mycelium-membership"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full font-display text-xs tracking-widest text-cosmic-black whitespace-nowrap transition-all hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #d4a843, #10b981)' }}
+            >
+              <Network className="w-3 h-3" />
+              Mycelium Membership
+            </Link>
+          </div>
         </div>
       </div>
 

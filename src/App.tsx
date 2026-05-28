@@ -21,6 +21,7 @@ const MediaGallery = lazy(() => import('./pages/MediaGallery'));
 const JoinResonance = lazy(() => import('./pages/JoinResonance'));
 const Contact = lazy(() => import('./pages/Contact'));
 const SeedMembership = lazy(() => import('./pages/SeedMembership'));
+const MyceliumMembership = lazy(() => import('./pages/MyceliumMembership'));
 
 function App() {
   const location = useLocation();
@@ -47,6 +48,7 @@ function App() {
             <Route path="/join" element={<JoinResonance />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/seed-membership" element={<SeedMembership />} />
+            <Route path="/mycelium-membership" element={<MyceliumMembership />} />
           </Routes>
         </Suspense>
       </AnimatePresence>
