@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { readdirSync, unlinkSync, renameSync } from 'fs';
 import { resolve } from 'path';
 import type { Plugin } from 'vite';
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 function cleanPublicDir(): Plugin {
   return {
@@ -40,4 +41,3 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
 });
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
