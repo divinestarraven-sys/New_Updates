@@ -40,3 +40,4 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
 });
+const googleClientId = import.meta.env.183027664608-c2nkd16v9dlqaidu8is77g7m7kuao2e6.apps.googleusercontent.com;
