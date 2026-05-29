@@ -1,9 +1,8 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite'; // 1. Import loadEnv
 import react from '@vitejs/plugin-react';
 import { readdirSync, unlinkSync, renameSync } from 'fs';
 import { resolve } from 'path';
 import type { Plugin } from 'vite';
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 function cleanPublicDir(): Plugin {
   return {
@@ -35,9 +34,19 @@ function cleanPublicDir(): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), cleanPublicDir()],
-  optimizeDeps: {
-    exclude: ['lucide-react'],
-  },
+export default defineConfig(({ mode }) => {
+  // 2. Load env file based on the current 'mode' (development, production, etc.)
+  // process.cwd() tells Vite to look for the .env file in the root directory
+  const env = loadEnv(mode, process.cwd(), '');
+
+  // 3. Access your variable safely from the returned object
+  const googleClientId = env.VITE_GOOGLE_CLIENT_ID; 
+
+  return {
+    plugins: [react(), cleanPublicDir()],
+    optimizeDeps: {
+      exclude: ['lucide-react'],
+    },
+    // If you need to expose this variable or do something with it in the config, you can use it here
+  };
 });
